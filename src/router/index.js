@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
-
 const HelloWorld=resolve=>require.ensure(['@/components/HelloWorld'],resolve);
 
 
