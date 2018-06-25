@@ -1169,6 +1169,7 @@ html {
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     z-index: 200;
+    transition: all .5s;
 }
 
 .md-modal-transition .md-modal-inner {
