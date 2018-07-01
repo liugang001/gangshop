@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router';
 import VueLazyload from 'vue-lazyload'//懒加载
+import VueInfiniteScroll from "vue-infinite-scroll";
 //css样式
 import "../../static/css/base.css";
 import "../../static/css/goods-list.css";
@@ -10,6 +11,7 @@ import "../../static/css/goods-list.css";
 const goodsList=resolve=>require(["@/components/goods/goodsList"],resolve);
 
 Vue.use(Router);
+Vue.use(VueInfiniteScroll);
 Vue.use(VueLazyload,{
   preLoad:1.4,
   loading: 'static/loading-svg/loading-bars.svg',

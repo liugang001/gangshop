@@ -7,7 +7,7 @@
         <div class="filter-nav">
           <span class="sortby">排序:</span>
           <a href="javascript:void(0)" class="default cur">默认</a>
-          <a href="javascript:void(0)" class="price">价格 <svg class="icon icon-arrow-short"><use xlink:href="#icon-arrow-short"></use></svg></a>
+          <a href="javascript:void(0)" class="price" :class="{'sort-up':service.sortFlag}" @click="sortGoods()">价格 <svg class="icon icon-arrow-short"><use xlink:href="#icon-arrow-short"></use></svg></a>
           <a href="javascript:void(0)" class="filterby" @click="showFilterPop()">筛选</a>
         </div>
         <div class="accessory-result">
@@ -42,6 +42,12 @@
                 </li>
               </ul>
             </div>
+            <div class="view-more-normal"
+                 v-infinite-scroll="loadMore"
+                 infinite-scroll-disabled="busy"
+                 infinite-scroll-distance="20">
+                <img src="./../../../static/loading-svg/loading-spinning-bubbles.svg" v-show="loading">
+            </div>
           </div>
         </div>
       </div>
@@ -50,6 +56,7 @@
     <transition name="fade">
         <div class="md-overlay" v-show="filterShow" @click.stop="closeFilterPop()"></div>
     </transition>
+
   </div>
 </template>
 
@@ -65,6 +72,13 @@
         },
         data(){
             return {
+                  service:{
+                      page:1,
+                      pageSize:8,
+                      sortFlag:true,
+                  },
+                  busy:true,
+                  loading:false,
                   goodsList:[],
                   priceList:[
                       {'startPrice':"0.00",'endPrice':"1000.00"},
@@ -79,11 +93,35 @@
         },
         methods:{
             getGoodsList(){
-                axios.get("http://localhost:3000/goods").then(result=>{
-                  console.log(result)
-                  this.goodsList=result.data.list;
-                  console.log(this.goodsList)
+                this.loading=true;
+                var service=this.service;
+                axios.get("http://localhost:3000/goods",{
+                    params:{
+                        page:service.page,
+                        pageSize:service.pageSize,
+                        sortFlag:service.sortFlag?1:-1
+                    }
+                }).then(result=>{
+                  var res=result.data;
+                  this.loading=false;
+                  if(res.status==2000){
+                      this.goodsList=this.goodsList.concat(res.list);
+                      if(res.len===0){
+                        this.busy=true;
+                      }else{
+                          this.busy=false;
+                      }
+                  }else{
+                    this.goodsList=[];
+                  }
                 })
+            },
+            //商品的拍讯
+            sortGoods(){
+              this.service.sortFlag =!this.service.sortFlag;
+              console.log('next:'+this.service.sortFlag);
+              this.service.page = 1;
+              this.getGoodsList();
             },
             //价格区间选中事件
             checkedPrice(index){
@@ -96,6 +134,14 @@
             //关闭移动端筛选
             closeFilterPop(){
               this.filterShow=false;
+            },
+            //加载更多数据
+            loadMore(){
+                this.busy=true;
+                setTimeout(()=>{
+                    this.service.page++;
+                    this.getGoodsList();
+                },50)
             }
         },
         mounted(){
