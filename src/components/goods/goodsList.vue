@@ -29,7 +29,7 @@
                 <li v-for="item in goodsList" :id="item.productId">
                   <div class="pic">
                     <transition name="fade">
-                        <a href="#"><img v-lazy="'static/'+item.productImage" alt=""></a>
+                        <a href="#"><img v-lazy="'static/img/'+item.productImage" alt=""></a>
                     </transition>
                   </div>
                   <div class="main">
@@ -79,8 +79,9 @@
         },
         methods:{
             getGoodsList(){
-                axios.get("/static/goods.json").then(result=>{
-                  this.goodsList=result.data.result;
+                axios.get("http://localhost:3000/goods").then(result=>{
+                  console.log(result)
+                  this.goodsList=result.data.list;
                   console.log(this.goodsList)
                 })
             },

@@ -5,11 +5,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var ejs=require("ejs");
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
 
 var app = express();
-
+var db=require('./model/db');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 //设置模板渲染引擎为html
@@ -24,9 +22,24 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+
+//跨域设置
+app.all('*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
+  res.header("X-Powered-By",' 3.2.1')
+  res.header("Content-Type", "application/json;charset=utf-8");
+  next();
+});
+
+var indexRouter = require('./routes/index');
+var usersRouter = require('./routes/users');
+var shopRouter=require('./routes/goods');
 //路由配置
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/goods', shopRouter);
 
 
 
