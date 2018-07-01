@@ -6,7 +6,7 @@
       <div class="container">
         <div class="filter-nav">
           <span class="sortby">排序:</span>
-          <a href="javascript:void(0)" class="default cur">默认</a>
+          <a href="javascript:void(0)" class="default cur" @click="defaultSort()">默认</a>
           <a href="javascript:void(0)" class="price" :class="{'sort-up':service.sortFlag}" @click="sortGoods()">价格 <svg class="icon icon-arrow-short"><use xlink:href="#icon-arrow-short"></use></svg></a>
           <a href="javascript:void(0)" class="filterby" @click="showFilterPop()">筛选</a>
         </div>
@@ -92,7 +92,7 @@
             }
         },
         methods:{
-            getGoodsList(){
+            getGoodsList(flag){
                 this.loading=true;
                 var service=this.service;
                 axios.get("http://localhost:3000/goods",{
@@ -105,21 +105,31 @@
                   var res=result.data;
                   this.loading=false;
                   if(res.status==2000){
-                      this.goodsList=this.goodsList.concat(res.list);
-                      if(res.len===0){
-                        this.busy=true;
+                      if(flag){
+                          this.goodsList=this.goodsList.concat(res.list);
+                          if(res.len===0){
+                            this.busy=true;
+                          }else{
+                            this.busy=false;
+                          }
                       }else{
-                          this.busy=false;
+                          this.goodsList = res.list;
+                          this.busy = false;
                       }
                   }else{
                     this.goodsList=[];
                   }
                 })
             },
-            //商品的拍讯
+            //商品的默认排序
+            defaultSort(){
+              this.service.sortFlag=true;
+              this.service.page=1;
+              this.getGoodsList();
+            },
+            //商品的升序与降序排列
             sortGoods(){
               this.service.sortFlag =!this.service.sortFlag;
-              console.log('next:'+this.service.sortFlag);
               this.service.page = 1;
               this.getGoodsList();
             },
@@ -140,7 +150,7 @@
                 this.busy=true;
                 setTimeout(()=>{
                     this.service.page++;
-                    this.getGoodsList();
+                    this.getGoodsList(true);
                 },50)
             }
         },
