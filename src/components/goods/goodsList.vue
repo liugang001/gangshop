@@ -61,6 +61,7 @@
 </template>
 
 <script>
+    import qs from 'querystring';
     import axios from 'axios';
     import NavHeader from "@/components/common/NavHeader";
     import NavFooter from "@/components/common/NavFooter";
@@ -95,30 +96,28 @@
             getGoodsList(flag){
                 this.loading=true;
                 var service=this.service;
-                axios.get("http://localhost:3000/goods",{
-                    params:{
-                        page:service.page,
-                        pageSize:service.pageSize,
-                        sortFlag:service.sortFlag?1:-1
-                    }
-                }).then(result=>{
+                var data={
+                    page:service.page,
+                    pageSize:service.pageSize,
+                    sortFlag:service.sortFlag?1:-1
+                }
+                axios.post("http://localhost:3000/goods",qs.stringify(data)).then(result=>{
                   var res=result.data;
                   this.loading=false;
                   if(res.status==2000){
                       if(flag){
-                          this.goodsList=this.goodsList.concat(res.list);
-                          if(res.len===0){
-                            this.busy=true;
-                          }else{
-                            this.busy=false;
-                          }
+                           this.goodsList=this.goodsList.concat(res.list);
+                           this.busy=res.len==0?true:false;
                       }else{
                           this.goodsList = res.list;
                           this.busy = false;
                       }
                   }else{
+                    console.log("发生错误")
                     this.goodsList=[];
                   }
+                }).catch(()=>{
+                  console.log('无法连接到服务器');
                 })
             },
             //商品的默认排序
