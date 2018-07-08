@@ -82,8 +82,8 @@
                   loading:false,
                   goodsList:[],
                   priceList:[
-                      {'startPrice':"0.00",'endPrice':"1000.00"},
-                      {'startPrice':"1000.00",'endPrice':"2000.00"},
+                      {'startPrice':"0.00",'endPrice':"500.00"},
+                      {'startPrice':"500.00",'endPrice':"1000.00"},
                       {'startPrice':"2000.00",'endPrice':"3000.00"},
                       {'startPrice':"3000.00",'endPrice':"4000.00"},
                       {'startPrice':"4000.00",'endPrice':"5000.00"},
@@ -99,13 +99,14 @@
                 var data={
                     page:service.page,
                     pageSize:service.pageSize,
-                    sortFlag:service.sortFlag?1:-1
+                    sortFlag:service.sortFlag?1:-1,
+                    priceLevel:this.priceChecked
                 }
                 axios.post("http://localhost:3000/goods",qs.stringify(data)).then(result=>{
                   var res=result.data;
                   this.loading=false;
                   if(res.status==2000){
-                      if(flag){
+                      if(flag&&res.list!==0){
                            this.goodsList=this.goodsList.concat(res.list);
                            this.busy=res.len==0?true:false;
                       }else{
@@ -134,7 +135,9 @@
             },
             //价格区间选中事件
             checkedPrice(index){
+                this.service.page=1;//重置第一页
                 this.priceChecked=index;
+                this.getGoodsList();
             },
             //开启移动端筛选
             showFilterPop(){
