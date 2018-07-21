@@ -142,7 +142,7 @@
             //开启加入到购物车
             addCart:function(id){
               var data={productId:id}
-              axios.post("/goods/addCart",qs.stringify(data)).then(function(result){
+              axios.post("http://localhost:3000/goods/addCart",qs.stringify(data)).then(function(result){
                   var res=result.data;
                   if(res.status==0){
                       alert("添加成功");

@@ -29,7 +29,6 @@
           </symbol>
         </defs>
       </svg>
-
       <div class="navbar">
         <div class="navbar-left-container">
           <a href="/">
@@ -40,7 +39,7 @@
           <div class="navbar-menu-container">
             <!--<a href="/" class="navbar-link">我的账户</a>-->
             <span class="navbar-link"></span>
-            <a href="javascript:void(0)" class="navbar-link">登录</a>
+            <a href="javascript:void(0)" class="navbar-link" @click="loginModalFlag=true">登录</a>
             <!--<a href="javascript:void(0)" class="navbar-link">登出</a>-->
             <div class="navbar-cart-container">
               <span class="navbar-cart-count"></span>
@@ -53,20 +52,87 @@
           </div>
         </div>
       </div>
+
+      <div class="md-modal modal-msg md-modal-transition" :class="{'md-show':loginModalFlag}">
+        <div class="md-modal-inner">
+          <div class="md-top">
+            <div class="md-title">登录</div>
+            <button class="md-close" @click="loginModalFlag=false">Close</button>
+          </div>
+          <div class="md-content">
+            <div class="confirm-tips">
+              <div class="error-wrap" v-if="errorTip">
+                <span class="error error-show">用户名或者密码错误</span>
+              </div>
+              <ul>
+                <li class="regi_form_input">
+                  <i class="icon IconPeople"></i>
+                  <input type="text" tabindex="1" name="loginname" v-model="userName" class="regi_login_input regi_login_input_left" placeholder="用户名" data-type="loginname">
+                </li>
+                <li class="regi_form_input noMargin">
+                  <i class="icon IconPwd"></i>
+                  <input type="password" tabindex="2"  name="password" v-model="userPwd" class="regi_login_input regi_login_input_left login-input-no input_text" placeholder="密码">
+                </li>
+              </ul>
+            </div>
+            <div class="login-wrap">
+              <a href="javascript:;" class="btn-login" @click.stop="login" @keyup.enter="login">登  录</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="md-overlay" v-if="loginModalFlag" @click="loginModalFlag=false"></div>
     </header>
   </div>
 </template>
 <script>
+  import "../../../static/css/login.css";
+  import qs from "querystring";
+  import axios from "axios";
   export default {
-    name: "NavHeader"
+    name: "NavHeader",
+    data(){
+        return {
+          userName:"",
+          userPwd:"",
+          errorTip:false,
+          loginModalFlag:false,//登录框，默认为隐藏状态
+        }
+    },
+    methods:{
+      login(){
+        if(!this.userName || !this.userPwd){
+          this.errorTip = true;
+          return;
+        }
+        var data={
+            userName:this.userName,
+            userPwd:this.userPwd
+        }
+        //发送登录请求数据
+        axios.post("http://localhost:3000/users/login",qs.stringify(data)).
+        then(function(res){
+            var result=res.data;
+            if(result.status==0){
+                this.errorTip=false;
+                this.loginModalFlag=false;
+            }else{
+
+            }
+        }.bind(this)).catch(function(){
+            console.log('网络连接失败');
+        })
+
+
+      }
+    }
   }
 </script>
-
 <style scoped>
   .header {
     width: 100%;
     background-color: white;
-    font-family: "moderat", sans-serif;
+    font-family: "moderat",sans-serif;
     font-size: 16px;
   }
 
@@ -76,7 +142,6 @@
     height: 0;
     overflow: hidden;
   }
-
   .navbar {
     display: flex;
     justify-content: space-between;
@@ -87,50 +152,40 @@
     margin: 0 auto;
     padding: 5px 20px 10px 20px;
   }
-
   .navbar-left-container {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     margin-left: -20px;
   }
-
   .header a, .footer a {
-    color: #666;
     text-decoration: none;
   }
-
   .navbar-brand-logo {
     /*width: 120px;*/
     margin-top: 10px;
   }
-
   a {
     -webkit-transition: color .3s ease-out;
     transition: color .3s ease-out;
   }
-
   .navbar-right-container {
     display: flex;
     justify-content: flex-start;
     align-items: center;
   }
-
   .navbar-menu-container {
     display: flex;
     justify-content: flex-end;
     align-items: center;
     padding-top: 10px;
   }
-
   .navbar-link {
     padding-left: 15px;
   }
-
   .navbar-cart-container {
     position: relative;
   }
-
   .navbar-cart-count {
     justify-content: center;
     align-items: center;
@@ -145,7 +200,6 @@
     font-weight: bold;
     text-align: center;
   }
-
   .navbar-cart-logo {
     width: 25px;
     height: 25px;

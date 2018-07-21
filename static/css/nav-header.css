@@ -49,6 +49,7 @@ a {
     justify-content: flex-end;
     align-items: center;
     padding-top: 10px;
+    justify-content:center;
 }
 .navbar-link {
     padding-left: 15px;
