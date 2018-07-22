@@ -39,8 +39,8 @@
           <div class="navbar-menu-container">
             <!--<a href="/" class="navbar-link">我的账户</a>-->
             <span class="navbar-link"></span>
-            <a href="javascript:void(0)" class="navbar-link" @click="loginModalFlag=true">登录</a>
-            <!--<a href="javascript:void(0)" class="navbar-link">登出</a>-->
+            <a href="javascript:void(0)" class="navbar-link" v-if="nickName" @click="loginModalFlag=true">登录</a>
+            <a href="javascript:void(0)" class="navbar-link" v-else="!nickName" @click="logOut()">登出</a>
             <div class="navbar-cart-container">
               <span class="navbar-cart-count"></span>
               <a class="navbar-link" href="/#/cart">
@@ -95,11 +95,16 @@
         return {
           userName:"",
           userPwd:"",
+          nickName:true,
           errorTip:false,
           loginModalFlag:false,//登录框，默认为隐藏状态
         }
     },
+    mounted(){
+        this.checkLogin();
+    },
     methods:{
+      //用户登录
       login(){
         if(!this.userName || !this.userPwd){
           this.errorTip = true;
@@ -116,15 +121,33 @@
             if(result.status==0){
                 this.errorTip=false;
                 this.loginModalFlag=false;
+                this.nickName=false;
             }else{
-
+                console.log(result.msg);
             }
         }.bind(this)).catch(function(){
             console.log('网络连接失败');
         })
-
-
-      }
+      },
+      //检验登录状态
+      checkLogin(){
+          axios.post("http://localhost:3000/users/checkLogin").then(function(data){
+              let res=data.data;
+              console.log(res);
+              if(res.status==0){
+                  this.loginModalFlag = false;
+              }
+          }.bind(this));
+      },
+      //用户登出
+      logOut(){
+        axios.post("http://localhost:3000/users/logout").then((response)=>{
+          let res = response.data;
+          if(res.status=="0"){
+              this.nickName = false;
+          }
+        })
+      },
     }
   }
 </script>

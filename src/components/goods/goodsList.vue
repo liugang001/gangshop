@@ -52,6 +52,26 @@
         </div>
       </div>
     </div>
+    <Modal :mdShow="mdShow" @close="closeModal">
+      <p slot="message">
+        请先登录,否则无法加入到购物车中!
+      </p>
+      <div slot="btnGroup">
+        <a class="btn btn--m" href="javascript:void(0);" @click="mdShow = false">关闭</a>
+      </div>
+    </Modal>
+    <Modal :mdShow="mdShowCart" @close="closeModal">
+      <p slot="message">
+        <svg class="icon-status-ok">
+          <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-status-ok"></use>
+        </svg>
+        <span>加入购物车成!</span>
+      </p>
+      <div slot="btnGroup">
+        <a class="btn btn--m" href="javascript:void(0);" @click="mdShowCart = false">继续购物</a>
+        <router-link class="btn btn--m btn--red" href="javascript:;" to="/cart">查看购物车</router-link>
+      </div>
+    </Modal>
     <nav-footer></nav-footer>
     <transition name="fade">
         <div class="md-overlay" v-show="filterShow" @click.stop="closeFilterPop()"></div>
@@ -66,10 +86,11 @@
     import NavHeader from "@/components/common/NavHeader";
     import NavFooter from "@/components/common/NavFooter";
     import NavBread from "@/components/common/NavBread";
+    import Modal from "@/components/common/Modal";
     export default {
         name: "goodsList",
         components:{
-          NavHeader,NavFooter,NavBread
+          NavHeader,NavFooter,NavBread,Modal
         },
         data(){
             return {
@@ -78,6 +99,8 @@
                       pageSize:8,
                       sortFlag:true,
                   },
+                  mdShow:false,
+                  mdShowCart:false,
                   busy:true,
                   loading:false,
                   goodsList:[],
@@ -145,11 +168,11 @@
               axios.post("http://localhost:3000/goods/addCart",qs.stringify(data)).then(function(result){
                   var res=result.data;
                   if(res.status==0){
-                      alert("添加成功");
+                      this.mdShowCart = true;
                   }else{
-                      alert("添加失败");
+                      this.mdShow = true;
                   }
-              }).catch(function(){
+              }.bind(this)).catch(function(){
                 console.log("无法连接到无服务器");
               })
             },
@@ -160,6 +183,7 @@
             //关闭移动端筛选
             closeFilterPop(){
               this.filterShow=false;
+              this.mdShowCart = false;
             },
             //加载更多数据
             loadMore(){
@@ -168,7 +192,11 @@
                     this.service.page++;
                     this.getGoodsList(true);
                 },50)
-            }
+            },
+            closeModal(){
+              this.mdShow = false;
+              this.mdShowCart = false;
+            },
         },
         mounted(){
           this.getGoodsList();

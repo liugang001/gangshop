@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User=require("../model/user");//用户列表数据库模型
 
+//登录接口
 router.post("/login",function(req,res){
     let params={
         userName:req.body.userName,
@@ -35,5 +36,41 @@ router.post("/login",function(req,res){
         });
     });
 });
+
+
+//登出接口
+router.post("/logout", function (req,res,next) {
+  res.cookie("userId","",{
+    path:"/",
+    maxAge:-1
+  });
+  res.json({
+    status:"0",
+    msg:'',
+    result:''
+  })
+});
+
+
+//检验登录状态
+router.post("/checkLogin",function(req,res,next){
+      if(req.cookies.userId){
+            res.json({
+              status:0,
+              msg:'',
+              result:req.cookies.userName || ''
+            });
+      }else{
+            res.json({
+              status:1,
+              msg:'未登录',
+              result:''
+            });
+      }
+});
+
+
+
+
 
 module.exports = router;
