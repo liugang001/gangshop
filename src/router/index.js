@@ -9,6 +9,7 @@ import "../../static/css/goods-list.css";
 
 //路由配置
 const goodsList=resolve=>require(["@/components/goods/goodsList"],resolve);
+const cartList=resolve=>require(["@/components/cart/cartList"],resolve);
 
 Vue.use(Router);
 Vue.use(VueInfiniteScroll);
@@ -27,6 +28,10 @@ export default new Router({
     {
       path:"/home",
       component:goodsList
+    },
+    {
+      path:"/cart",
+      component:cartList
     }
   ]
 })
